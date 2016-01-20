@@ -1,0 +1,23 @@
+
+#include "sendUDP.h"
+#include "receiveUDP.h"
+#include "sendTCP.h"
+#include "receiveTCP.h"
+
+
+int main (){
+	ipAddr = "192.168.1.4";
+	
+	n=sendUDP(ipAddr);
+	
+	if(n!=0){
+		printf("UDP splat!\n");
+	}
+
+	n=sendTCP(ipaAddr);
+
+	if(n!=0){
+		printf("TCP splat!\n");
+	}
+	return 0;
+}
