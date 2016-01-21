@@ -10,10 +10,10 @@
 #define SERVICE_PORT 4547
 #define BUFSIZE 5000
 
-int receiveUDP(void* arg)
+int receiveUDP()
 {
 	int sock, length, n;
-	socklen_t remAddrlen;
+	socklen_t remAddrLen;
 	struct sockaddr_in myAddr;
 	struct sockaddr_in remAddr;
 	unsigned char buffer[BUFSIZE];
@@ -24,22 +24,21 @@ int receiveUDP(void* arg)
 		perror("Opening socket");
                 exit(-1);
 	}
-	
 	length = sizeof(myAddr);
 	bzero(&myAddr,length);
 	myAddr.sin_family=AF_INET;
 	myAddr.sin_addr.s_addr=INADDR_ANY;
-	myAddr.sin_port=htons(atoi(argv[1]));
+        myAddr.sin_port=htons(SERVICE_PORT);
 	if (bind(sock,(struct sockaddr *)&myAddr,length)<0)
 	{
 		perror("binding");
                 exit(-2);
 	}
-	remAddrlen=sizeof(struct sockaddr_in);
+	remAddrLen=sizeof(struct sockaddr_in);
 
 	while(1)
 	{
-		n = recvfrom(sock,buffer,1024,0,(struct sockaddr *)&remAddr,&remAddrlen);
+		n = recvfrom(sock,buffer,1024,0,(struct sockaddr *)&remAddr,&remAddrLen);
 		if (n<0)
 		{
 			perror("recvfrom");
@@ -47,7 +46,7 @@ int receiveUDP(void* arg)
 		}
 		write(1,"Received a datagram: ",21);
 		write(1,buffer,n);
-/*n= sendto(sock, "Got your message\n",17,0,(struct sockaddr *)&remAddr,remAddrlen);
+/*n= sendto(sock, "Got your message\n",17,0,(struct sockaddr *)&remAddr,remAddrLen);
 		if(n<0)
 		{
 			error("sendto");

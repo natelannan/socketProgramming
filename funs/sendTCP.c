@@ -7,60 +7,55 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-void error(char *msg){
-	perror(msg);
-	exit(1);
-}
+#define SERVICE_PORT 4547
+#define BUFSIZE 5000
 
-int main(int argc, char *argv[])
+int sendTCP(void* arg)
 {
 	int sockfd, portno, n;
-	char buffer[256];
-	struct sockaddr_in serv_addr;
-	struct hostent *server;
+	char buffer[BUFSIZE];
+	struct sockaddr_in remAddr;
+	struct hostent *remHost;
 
-	if (argc < 3)
-	{
-		fprintf(stderr, "usage %s hostname port\n", argv[0]);
-		exit(1);
-	}
-
-	portno = atoi(argv[2]);
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
 	if (sockfd < 0) {
-		error("ERROR opening socket");
+		perror("ERROR opening socket");
+                exit(-1);
 	}
 
-	server = gethostbyname(argv[1]);
-	if (server == NULL){
-		fprintf(stderr,"ERROR, no such host\n");
-		exit(1);	
+        remHost = gethostbyname((char*)arg);
+	if (remHost == NULL){
+                perror("ERROR, no such host");
+		exit(-2);	
 	}
 
-	bzero((char *) &serv_addr, sizeof(serv_addr));
-	serv_addr.sin_family = AF_INET;
+	bzero((char *) &remAddr, sizeof(remAddr));
+	remAddr.sin_family = AF_INET;
 
-	bcopy((char *) server->h_addr, (char*) &serv_addr.sin_addr.s_addr,server->h_length);
+	bcopy((char *) remHost->h_addr, (char*) &remAddr.sin_addr.s_addr,remHost->h_length);
 
-	serv_addr.sin_port = htons(portno);
+	remAddr.sin_port = htons(SERVICE_PORT);
 
-	if (connect(sockfd,(struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0){
-		error("ERROR connecting");
+	if (connect(sockfd,(struct sockaddr*)&remAddr, sizeof(remAddr)) < 0){
+		perror("ERROR connecting");
+                exit(-3);
 	}
 
 	printf("Please enter message: ");
-	bzero(buffer, 256);
-	fgets(buffer, 255, stdin);
+	bzero(buffer, BUFSIZE);
+        fgets((char*)buffer, BUFSIZE-1, stdin);
 	n = write(sockfd, buffer, strlen(buffer));
 	if (n<0){
-		error("ERROR writing to socket");
+		perror("ERROR writing to socket");
+                exit(-4);
 	}
 
-	bzero(buffer, 256);
-	n = read(sockfd, buffer, 255);
+	bzero(buffer, BUFSIZE);
+	n = read(sockfd, buffer, BUFSIZE-1);
 	if (n < 0){
-		error("ERROR reading from socket");
+		perror("ERROR reading from socket");
+                exit(-5);
 	}
 	
 	printf("%s\n", buffer);

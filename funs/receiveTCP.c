@@ -6,56 +6,51 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-void error(char *msg){
-	perror(msg);
-	exit(1);
-}
+#define SERVICE_PORT 4547
+#define BUFSIZE 5000
 
-int main(int argc, char *argv[])
+int receiveTCP()
 {
 	int sockfd, newsockfd, portno;
-	socklen_t clilen;
-	char buffer[256];
-	struct sockaddr_in serv_addr, cli_addr;
+	socklen_t remAddrLen;
+	char buffer[BUFSIZE];
+	struct sockaddr_in myAddr, remAddr;
 	int n;
-
-	if (argc < 2)
-	{
-		fprintf(stderr, "ERROR, no port provided\n");
-		exit(1);
-	}
 
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	
 	if (sockfd < 0) {
-		error("ERROR opening socket");
+		perror("ERROR opening socket");
+                exit(-1);
 	}
 
-	bzero((char*) &serv_addr, sizeof(serv_addr));
-	portno = atoi(argv[1]);
-	serv_addr.sin_family = AF_INET;
-	serv_addr.sin_addr.s_addr = INADDR_ANY;
-	serv_addr.sin_port = htons(portno);
+	bzero((char*) &myAddr, sizeof(myAddr));
+	myAddr.sin_family = AF_INET;
+	myAddr.sin_addr.s_addr = INADDR_ANY;
+	myAddr.sin_port = htons(SERVICE_PORT);
 	
-	if(bind(sockfd, (struct sockaddr *) &serv_addr, sizeof(serv_addr)) < 0){
-		error("ERROR on binding");
+	if(bind(sockfd, (struct sockaddr *) &myAddr, sizeof(myAddr)) < 0){
+		perror("ERROR on binding");
+                exit(-2);
 	}
 
 	listen(sockfd, 5);
-	clilen = sizeof(cli_addr);
+	remAddrLen = sizeof(remAddr);
 
-	newsockfd = accept(sockfd, (struct sockaddr *) &cli_addr, &clilen);
+	newsockfd = accept(sockfd, (struct sockaddr *) &remAddr, &remAddrLen);
 
 	if (newsockfd < 0){
-		error("ERROR on accept");
+		perror("ERROR on accept");
+                exit(-3);
 	}
 
-	bzero(buffer, 256);
+	bzero(buffer, BUFSIZE);
 	
-	n = read(newsockfd, buffer, 255);
+	n = read(newsockfd, buffer, BUFSIZE-1);
 
 	if (n < 0){
-		error("ERROR reading from socket");
+		perror("ERROR reading from socket");
+                exit(-4);
 	}
 
 	printf("Here is the message: %s\n", buffer);
@@ -63,9 +58,8 @@ int main(int argc, char *argv[])
 	n = write(newsockfd, "I got your message",18);
 
 	if (n < 0){
-		error("ERROR writing to socket");
+		perror("ERROR writing to socket");
+                exit(-5);
 	}	
 	return 0;
 } 
-
-	

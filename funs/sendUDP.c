@@ -38,7 +38,7 @@ int sendUDP(void* arg)
 
 	remAddr.sin_family = AF_INET;
 	//hp = gethostbyname(argv[1]);
-	remAddr.sin_addr.s_addr = inet_addr((char)&arg);
+	remAddr.sin_addr.s_addr = inet_addr((char*)arg);
 	/*if (hp==0)
 	{
 		error("Unknown host");
@@ -51,15 +51,14 @@ int sendUDP(void* arg)
 	printf("Please enter the message: ");
 
 	bzero(buffer,BUFSIZE);
-	fgets(buffer,BUFSIZE-1,stdin);
-	n=sendto(sock,buffer,strlen(buffer),0,(struct sockaddr *) &remAddr,length);
+	fgets((char*)buffer,BUFSIZE-1,stdin);
+	n=sendto(sock,buffer,strlen((char*)buffer),0,(struct sockaddr *) &remAddr,length);
 	if(n<0)
 	{
-		perror("Sending message")
+	        perror("Sending message");
 		exit(-2);
 	}
 	
-	return buffer;
 	/*n=recvfrom(sock,buffer,256,0, (struct sockaddr *)&myAddr,&length);
 	if (n<0)
 	{
@@ -68,5 +67,6 @@ int sendUDP(void* arg)
 	write(1,"Got an ack: ",12);
 	write(1,buffer,n);
 	*/
+	return 0;
 }
 

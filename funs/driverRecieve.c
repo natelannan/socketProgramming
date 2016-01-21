@@ -1,21 +1,23 @@
+#include <stdio.h>
 
 #include "receiveUDP.h"
 #include "receiveTCP.h"
 
+int receiveUDP();
+//int receiveTCP();
 
 int main (){
-	ipAddr = "192.168.1.4";
-	
-	n=receiveUDP(ipAddr);
+        int n;
+	n=receiveUDP();
 	
 	if(n!=0){
 		printf("UDP splat!\n");
 	}
 
-	n=receiveTCP(ipAddr);
+	/*	n=receiveTCP();
 
 	if(n!=0){
 		printf("TCP splat!\n");
-	}
+		}*/
 	return 0;
 }

@@ -1,6 +1,6 @@
 #ifndef RECEIVEUDP_H
 #define RECEIVEUDP_H
 
-void *receiveUDP(void *arg);
+int receiveUDP();
 
 #endif
