@@ -1,6 +1,6 @@
 #ifndef SENDUDP_H
 #define SENDUDP_H
 
-void *sendUDP(void *arg);
+int sendUDP(void *arg);
 
 #endif
