@@ -11,7 +11,7 @@
 
 int receiveTCP()
 {
-	int sockfd, newsockfd, portno;
+	int sockfd, newsockfd;
 	socklen_t remAddrLen;
 	char buffer[BUFSIZE];
 	struct sockaddr_in myAddr, remAddr;

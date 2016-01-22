@@ -12,7 +12,7 @@
 
 int sendTCP(void* arg)
 {
-	int sockfd, portno, n;
+	int sockfd, n;
 	char buffer[BUFSIZE];
 	struct sockaddr_in remAddr;
 	struct hostent *remHost;
