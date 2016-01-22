@@ -8,10 +8,11 @@
 int sendTCP(void *);
 
 
-int main (){
+int main (int argc, char* argv[]){
         int n;
-        char ipAddr[15];
-	strcpy(ipAddr,"192.168.1.4");
+        char* ipAddr = argv[1];
+	
+	//strcpy(ipAddr,"192.168.1.4");
 	/*
 	n=sendUDP(ipAddr);
 	
@@ -20,6 +21,7 @@ int main (){
 	}*/
 
 	n=sendTCP(ipAddr);
+	//printf("n: %d\n",n);
 
 	if(n!=0){
 		printf("TCP splat!\n");
