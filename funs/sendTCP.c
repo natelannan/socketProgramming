@@ -21,13 +21,13 @@ int sendTCP(void* arg)
 
 	if (sockfd < 0) {
 		perror("ERROR opening socket");
-                exit(-1);
+                return(-1);
 	}
 
         remHost = gethostbyname((char*)arg);
 	if (remHost == NULL){
                 perror("ERROR, no such host");
-		exit(-2);	
+		return(-2);	
 	}
 
 	bzero((char *) &remAddr, sizeof(remAddr));
@@ -39,7 +39,7 @@ int sendTCP(void* arg)
 
 	if (connect(sockfd,(struct sockaddr*)&remAddr, sizeof(remAddr)) < 0){
 		perror("ERROR connecting");
-                exit(-3);
+                return(-3);
 	}
 
 	printf("Please enter message: ");
@@ -48,14 +48,14 @@ int sendTCP(void* arg)
 	n = write(sockfd, buffer, strlen(buffer));
 	if (n<0){
 		perror("ERROR writing to socket");
-                exit(-4);
+                return(-4);
 	}
 
 	bzero(buffer, BUFSIZE);
 	n = read(sockfd, buffer, BUFSIZE-1);
 	if (n < 0){
 		perror("ERROR reading from socket");
-                exit(-5);
+                return(-5);
 	}
 	
 	printf("%s\n", buffer);

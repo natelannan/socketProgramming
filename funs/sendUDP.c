@@ -25,7 +25,7 @@ int sendUDP(void* arg)
 	/*if (argc !=3 )
 	{	
 		printf("Usage: server port\n");
-		exit(1);
+		return(1);
 	}*/
 		
 	sock= socket(AF_INET, SOCK_DGRAM, 0);
@@ -33,7 +33,7 @@ int sendUDP(void* arg)
 	if(sock < 0)
 	{
 		perror("Opening socket");
-		exit(-1);
+		return(-1);
 	}
 
 	remAddr.sin_family = AF_INET;
@@ -56,7 +56,7 @@ int sendUDP(void* arg)
 	if(n<0)
 	{
 	        perror("Sending message");
-		exit(-2);
+		return(-2);
 	}
 	
 	/*n=recvfrom(sock,buffer,256,0, (struct sockaddr *)&myAddr,&length);

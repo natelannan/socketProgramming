@@ -22,7 +22,7 @@ int receiveUDP()
 	if (sock <0)
 	{
 		perror("Opening socket");
-                exit(-1);
+                return(-1);
 	}
 	length = sizeof(myAddr);
 	bzero(&myAddr,length);
@@ -32,7 +32,7 @@ int receiveUDP()
 	if (bind(sock,(struct sockaddr *)&myAddr,length)<0)
 	{
 		perror("binding");
-                exit(-2);
+                return(-2);
 	}
 	remAddrLen=sizeof(struct sockaddr_in);
 
@@ -42,7 +42,7 @@ int receiveUDP()
 		if (n<0)
 		{
 			perror("recvfrom");
-                        exit(-3);
+                        return(-3);
 		}
 		write(1,"Received a datagram: ",21);
 		write(1,buffer,n);

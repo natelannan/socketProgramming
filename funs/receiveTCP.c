@@ -21,7 +21,7 @@ int receiveTCP()
 	
 	if (sockfd < 0) {
 		perror("ERROR opening socket");
-                exit(-1);
+                return(-1);
 	}
 
 	bzero((char*) &myAddr, sizeof(myAddr));
@@ -31,7 +31,7 @@ int receiveTCP()
 	
 	if(bind(sockfd, (struct sockaddr *) &myAddr, sizeof(myAddr)) < 0){
 		perror("ERROR on binding");
-                exit(-2);
+                return(-2);
 	}
 
 	listen(sockfd, 5);
@@ -41,7 +41,7 @@ int receiveTCP()
 
 	if (newsockfd < 0){
 		perror("ERROR on accept");
-                exit(-3);
+                return(-3);
 	}
 
 	bzero(buffer, BUFSIZE);
@@ -50,7 +50,7 @@ int receiveTCP()
 
 	if (n < 0){
 		perror("ERROR reading from socket");
-                exit(-4);
+                return(-4);
 	}
 
 	printf("Here is the message: %s\n", buffer);
@@ -59,7 +59,7 @@ int receiveTCP()
 
 	if (n < 0){
 		perror("ERROR writing to socket");
-                exit(-5);
+                return(-5);
 	}	
 	return 0;
 } 
