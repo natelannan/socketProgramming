@@ -6,13 +6,14 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <errno.h>
 
 #define SERVICE_PORT 4547
 #define BUFSIZE 5000
 
 int sendTCP(void* arg)
 {
-	int sockfd, n;
+        int sockfd, n, s;
 	char buffer[BUFSIZE];
 	struct sockaddr_in remAddr;
 	struct hostent *remHost;
@@ -37,8 +38,10 @@ int sendTCP(void* arg)
 
 	remAddr.sin_port = htons(SERVICE_PORT);
 
-	if (connect(sockfd,(struct sockaddr*)&remAddr, sizeof(remAddr)) < 0){
-		perror("ERROR connecting");
+	s= connect(sockfd,(struct sockaddr*)&remAddr, sizeof(remAddr));
+	if (s < 0){
+	        //perror("ERROR connecting");
+	        printf("Connection error: %s\n", strerror(errno));
                 return(-3);
 	}
 
