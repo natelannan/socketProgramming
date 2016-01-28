@@ -1,3 +1,10 @@
+/*
+ *  receiveTCP.c
+ *
+ *  Created on: Jan 14, 2016
+ *      Author: Nate Lannan
+ */
+
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -5,10 +12,22 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <errno.h>
 
 #define SERVICE_PORT 4547
 #define BUFSIZE 5000
 
+/**
+ *Receives TCP message from any valid inet address
+ *
+ *returns:
+ *	 0			No error
+ *	-1			Error opening socket
+ *	-2			Error in binding
+ *      -3                      Error accepting connection
+ *      -4                      Error reading from socket
+ *      -5                      Error writing to socket
+ */
 int receiveTCP()
 {
 	int sockfd, newsockfd;
@@ -20,7 +39,8 @@ int receiveTCP()
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	
 	if (sockfd < 0) {
-		perror("ERROR opening socket");
+	        printf("Socket error: %s\n", strerror(errno));
+		//perror("ERROR opening socket");
                 return(-1);
 	}
 
@@ -30,7 +50,8 @@ int receiveTCP()
 	myAddr.sin_port = htons(SERVICE_PORT);
 	
 	if(bind(sockfd, (struct sockaddr *) &myAddr, sizeof(myAddr)) < 0){
-		perror("ERROR on binding");
+	        printf("Bind error: %s\n", strerror(errno));
+		//perror("ERROR on binding");
                 return(-2);
 	}
 
@@ -40,7 +61,8 @@ int receiveTCP()
 	newsockfd = accept(sockfd, (struct sockaddr *) &remAddr, &remAddrLen);
 
 	if (newsockfd < 0){
-		perror("ERROR on accept");
+	        printf("Accept error: %s\n", strerror(errno));
+		//perror("ERROR on accept");
                 return(-3);
 	}
 
@@ -49,7 +71,8 @@ int receiveTCP()
 	n = read(newsockfd, buffer, BUFSIZE-1);
 
 	if (n < 0){
-		perror("ERROR reading from socket");
+	        printf("Read error: %s\n", strerror(errno));
+		//perror("ERROR reading from socket");
                 return(-4);
 	}
 
@@ -58,7 +81,8 @@ int receiveTCP()
 	n = write(newsockfd, "I got your message",18);
 
 	if (n < 0){
-		perror("ERROR writing to socket");
+	        printf("Write error: %s\n", strerror(errno));
+		//perror("ERROR writing to socket");
                 return(-5);
 	}	
 	return 0;
