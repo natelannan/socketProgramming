@@ -27,7 +27,7 @@
  *	-2			Error in binding
  *      -3                      Error receiving message
  */
-int receiveUDP()
+int receiveUDP(uint8_t* buf, size_t numBytes)
 {
 	int sock, length, n;
 	socklen_t remAddrLen;

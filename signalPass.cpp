@@ -92,42 +92,42 @@ int SigPass_receivePacket(uint8_t* buf, size_t numBytes){
 
 	int i = 0;
 	int ret;
-	int bytesLeft = numBytes - 1;
+	int bytesLeft = numBytes - 1;  //account for extracted start byte
 
 	do{
-		if(i >= numBytes){
+	        if(i >= numBytes){  //read everything from buf without receiving a byte (start_byte)
 			return -1;
 		}
 
-		ret = read(fd, (void*) buf, 1);
+		ret = read(fd, (void*) buf, 1);   //read 1 byte into buf from fd
 
-		if(ret < -1)
+		if(ret < -1)  //read fail
 			return -2;
 
-		++i;
-		if(ret <= 0)
+		++i;  //increment
+		if(ret <= 0) //eof or 0 bytes read: start over
 			--i;
 	}
-	while(ret != 1 || buf[0] != SIGNAL_PASS_START_BYTE);
+	while(ret != 1 || buf[0] != SIGNAL_PASS_START_BYTE); //grab start byte in buf[0]
 
 	i = 0;
 
 	do{
-		ret = read(fd, (void*)(&buf[numBytes - bytesLeft]), bytesLeft);
+	  ret = read(fd, (void*)(&buf[numBytes - bytesLeft]), bytesLeft);  //try to grab bytes left and place in buf after bytes already written
 
-		if(ret == -1)
+		if(ret == -1) //read failed try again
 			++ret;
 
-		if(ret < 0)
+		if(ret < 0)  //? how does this happen
 			return -3;
 
-		bytesLeft -= ret;
+		bytesLeft -= ret;  //decrement bytes left by ammt of bytes xferd
 
-		++i;
+		++i; //iterator for max attempts
 	}
-	while(bytesLeft && i < MAX_IO_ATTEMPTS);
+	while(bytesLeft && i < MAX_IO_ATTEMPTS);//try to get the rest of the bytes
 
-	if(i >= MAX_IO_ATTEMPTS)
+	if(i >= MAX_IO_ATTEMPTS) //hit max attempts before all bytes transferred
 		return -4;
 
 	return 0;
@@ -148,23 +148,23 @@ int SigPass_sendPacket(uint8_t* buf, size_t numBytes){
 
 	for(i = 1;i<numBytes;++i){
 		if(buf[i] == SIGNAL_PASS_START_BYTE)
-			buf[i]--;
+		        buf[i]--;  //locate start byte ? decrement
 	}
 
 	i = 0;
 
 	do{
-		ret = write(fd, (void*)(&buf[numBytes - bytesLeft]), bytesLeft);
+	        ret = write(fd, (void*)(&buf[numBytes - bytesLeft]), bytesLeft); //attempt to send bytes
 
-		if(ret < 0)
+		if(ret < 0)      //send byte failed
 			return -1;
 
-		bytesLeft -= ret;
+		bytesLeft -= ret;  //subtract ammount left by what was sent
 		++i;
 	}
-	while(bytesLeft && i < MAX_IO_ATTEMPTS);
+	while(bytesLeft && i < MAX_IO_ATTEMPTS);  //while there are bytes left and haven't hit max
 
-	if(i >= MAX_IO_ATTEMPTS)
+	if(i >= MAX_IO_ATTEMPTS)  //hit max attempts before all bytes sent
 		return -2;
 
 	return 0;
