@@ -5,18 +5,7 @@
  *      Author: Nate Lannan
  */
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
-
-#define SERVICE_PORT 4547
-#define BUFSIZE 5000
-
+#include "receiveTCP.h"
 /**
  *Receives TCP message from any valid inet address
  *
@@ -28,13 +17,14 @@
  *      -4                      Error reading from socket
  *      -5                      Error writing to socket
  */
-int receiveTCP()
+int receiveTCP(uint8_t* buf, size_t numBytes)
 {
-	int sockfd, newsockfd;
+        int sockfd, newsockfd;
 	socklen_t remAddrLen;
-	char buffer[BUFSIZE];
+	//char buffer[BUFSIZE];
 	struct sockaddr_in myAddr, remAddr;
-	int n;
+	int n, i;
+	char str[80];
 
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	
@@ -66,9 +56,9 @@ int receiveTCP()
                 return(-3);
 	}
 
-	bzero(buffer, BUFSIZE);
+	//bzero(buffer, BUFSIZE);
 	
-	n = read(newsockfd, buffer, BUFSIZE-1);
+	n = read(newsockfd, buf, numBytes);
 
 	if (n < 0){
 	        printf("Read error: %s\n", strerror(errno));
@@ -76,9 +66,16 @@ int receiveTCP()
                 return(-4);
 	}
 
-	printf("Here is the message: %s\n", buffer);
-
-	n = write(newsockfd, "I got your message",18);
+	//printf("Here is the message: %s\n", buf);
+	printf("Contents of buffer: \n");
+	for (i=0; i<numBytes; i++)
+	        printf("\tbuf[%d]: %2x\n", i, buf[i]);
+	strcpy(str, "Received ");
+	char bytes[10];
+        snprintf(bytes,sizeof(bytes),"%d",(int)numBytes);
+	strcat(str, bytes);
+	strcat(str," bytes\n");
+	n = write(newsockfd, str,sizeof(str));
 
 	if (n < 0){
 	        printf("Write error: %s\n", strerror(errno));

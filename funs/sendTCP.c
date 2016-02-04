@@ -5,18 +5,8 @@
  *      Author: Nate Lannan
  */
 
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
+#include "sendTCP.h"
 
-#define SERVICE_PORT 4547
-#define BUFSIZE 5000
 /**
  *Sends TCP message to arg inet address
  *
@@ -28,10 +18,10 @@
  *      -4                      Error writing to socket
  *      -5                      Error reading from socket
  */
-int sendTCP(void* arg)
+int sendTCP(void* arg, uint8_t* buf, size_t numBytes)
 {
         int sockfd, n, s;
-	char buffer[BUFSIZE];
+	char ack[ACKSIZE];
 	struct sockaddr_in remAddr;
 	struct hostent *remHost;
 
@@ -63,25 +53,25 @@ int sendTCP(void* arg)
                 return(-3);
 	}
 
-	printf("Please enter message: ");
-	bzero(buffer, BUFSIZE);
-        fgets((char*)buffer, BUFSIZE-1, stdin);
-	n = write(sockfd, buffer, strlen(buffer));
+	//printf("Please enter message: ");
+	//bzero(buffer, BUFSIZE);
+        //fgets((char*)buffer, BUFSIZE-1, stdin);
+	n = write(sockfd, buf, numBytes);
 	if (n<0){
 	        printf("Write error: %s\n", strerror(errno));
 		//perror("ERROR writing to socket");
                 return(-4);
 	}
 
-	bzero(buffer, BUFSIZE);
-	n = read(sockfd, buffer, BUFSIZE-1);
+	bzero(ack, ACKSIZE);
+	n = read(sockfd, ack, ACKSIZE-1);
 	if (n < 0){
 	        printf("Read error: %s\n", strerror(errno));
 		//perror("ERROR reading from socket");
                 return(-5);
 	}
 	
-	printf("%s\n", buffer);
+	printf("ACK:  %s\n", ack);
 	
 	return 0;
 }	

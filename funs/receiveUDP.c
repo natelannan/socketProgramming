@@ -5,18 +5,7 @@
  *      Author: Nate Lannan
  */
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
-
-#define SERVICE_PORT 4547
-#define BUFSIZE 5000
+#include "receiveUDP.h"
 
 /**
  *Receives UDP messages from any valid inet address
@@ -29,11 +18,11 @@
  */
 int receiveUDP(uint8_t* buf, size_t numBytes)
 {
-	int sock, length, n;
+        int sock, length, n, i;
 	socklen_t remAddrLen;
 	struct sockaddr_in myAddr;
 	struct sockaddr_in remAddr;
-	unsigned char buffer[BUFSIZE];
+	//unsigned char buffer[BUFSIZE];
 
 	sock=socket(AF_INET, SOCK_DGRAM, 0);
 	if (sock <0)
@@ -57,15 +46,18 @@ int receiveUDP(uint8_t* buf, size_t numBytes)
 
 	while(1)
 	{
-		n = recvfrom(sock,buffer,1024,0,(struct sockaddr *)&remAddr,&remAddrLen);
+		n = recvfrom(sock,buf,numBytes,0,(struct sockaddr *)&remAddr,&remAddrLen);
 		if (n<0)
 		{		  
 	                printf("Receive error: %s\n", strerror(errno));
 		        //perror("recvfrom");
                         return(-3);
 		}
-		write(1,"Received a datagram: ",21);
-		write(1,buffer,n);
+		//write(1,"Received a datagram: ",21);
+		//write(1,buf,n);
+		printf("Contents of buffer: \n");
+		for (i=0; i<numBytes; i++)
+	                printf("\tbuf[%d]: %2x\n", i, buf[i]);
 	}
         return 0;
 }
