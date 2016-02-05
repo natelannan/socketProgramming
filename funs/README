@@ -1,0 +1,104 @@
+This directory contains 1.0 of UDP and TCP communication functions.
+
+The following are included in this version:
+    diverSend.c - driver program used to call UDP and TCP send 
+    		  functions for testing purposes.
+    driverReceive.c - driver program used to call UDP and TCP receive
+    		      functions for testing purposes.  
+    sendTCP.c - function to handle sending TCP packets.
+    sendTCP.h - header for sendTCP.c 
+    sendUDP.c - function to handle sending UDP packets.
+    sendUDP.h - header for sendUDP.c
+    receiveTCP.c - function to handle receiving TCP packets.
+    receiveTCP.h - header for receiveTCP.c
+    receiveUDP.c - function to handle receiving UDP packets.
+    receiveUDP.h - header for receiveUDP.c
+    makefile - makefile to compile drivers and functions
+
+For questions, comments, concerns contact natelannan@gmail.com.
+
+Compiling
+---------
+
+To compile type 'make' in the directory where the UDP and TCP 
+functions and drivers reside.  Output will be two executables:
+driverSend and driverReceive.  'make clean' will remove these 
+executables.
+
+Running Drivers
+---------------
+Currently the drivers are hard-coded to pass a 10 byte buffer 
+containing a0 a1 a2 a3 a4 a5 a6 a7 a8 and a9 byte values for 
+testing.  The drivers need to run on different instances of 
+terminal if you are testing using 1 device.  
+
+Start by getting driverReceive ready to receive a message:
+'./driverReceive'  - UDP mode
+'./driverReceive -t' - TCP mode
+
+On the other device or terminal send 10 byte message:
+'./driverSend <ipaddress of device sending to>' - UDP mode
+'./driverSend <ipaddress> -t' -TCP mode
+
+If no errors occur, the receiving device will print the contents
+of the buffer.  In the case of TCP communication, the receiver
+will send an acknowlegement to the sender and then close.  In
+the case of UDP mode the receiver will continue to run, waiting 
+for more messages until ctrl-c is pressed.   
+
+If error occurs, driver will return errno message and the error 
+code from the function that encountered the error. 
+
+* Discovering ipaddress:  'ifconfig' will report the device 
+ipaddress as 'inet addr' under eth0, eth1, or enp2s0.
+
+** If you are connecting 2 devices together via an ethernet cable,
+such as a Beaglebone and your computer, you must configure
+the devices to be on the same network and have static ipaddresses:
+    Beaglebone:  'ifconfig eth0 192.168.2.1 netmask 255.255.255.0'
+    Computer:  'sudo ifconfig eth0 192.168.2.2 netmask 255.255.255.0'
+               (eth0 may be eth1 or enp2s0)
+Verify the devices can talk by 'ping <ipaddress of other computer>'.
+Network settings will revert at bootup.
+
+***Functions communicate on port 4547 which is configurable in the .h files
+
+Functions
+---------
+
+int sendUDP(void* ipAddr, uint8_t* buf, size_t numBytes)
+ Sends UDP message to ipAddr inet address
+ returns:
+ 	 0			no error
+ 	-1			Error opening socket
+ 	-2			Error in sending message
+
+int receiveUDP(uint8_t* buf, size_t numBytes)
+ Receives UDP messages from any valid inet address
+ returns:
+ 	 0			No error
+ 	-1			Error opening socket
+ 	-2			Error in binding
+        -3                      Error receiving message
+
+
+int sendTCP(void* arg, uint8_t* buf, size_t numBytes)
+ Sends TCP message to arg inet address
+ returns:
+ 	 0			no error
+ 	-1			Error opening socket
+ 	-2			Error locating host 
+        -3                      Error connecting to host
+        -4                      Error writing to socket
+        -5                      Error reading from socket
+
+
+int receiveTCP(uint8_t* buf, size_t numBytes)
+ Receives TCP message from any valid inet address
+ returns:
+ 	 0			No error
+ 	-1			Error opening socket
+ 	-2			Error in binding
+        -3                      Error accepting connection
+        -4                      Error reading from socket
+        -5                      Error writing to socket
