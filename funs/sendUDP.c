@@ -41,6 +41,10 @@ int sendUDP(void* ipAddr, uint8_t* buf, size_t numBytes)
 
 	//bzero(buffer,BUFSIZE);
 	//fgets((char*)buffer,BUFSIZE-1,stdin);
+	if (fcntl(sock, F_SETFL, O_NONBLOCK | FASYNC) < 0) {
+		close(sock);
+		exit (EXIT_FAILURE);
+	}
 	n=sendto(sock,buf,numBytes,0,(struct sockaddr *) &remAddr,length);
 	if(n<0)
 	{
