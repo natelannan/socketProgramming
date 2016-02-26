@@ -42,6 +42,10 @@ int receiveUDP(uint8_t* buf, size_t numBytes)
 		//perror("binding");
                 return(-2);
 	}
+	if (fcntl(sock, F_SETFL, O_NONBLOCK | FASYNC) < 0) {
+		close(sock);
+		exit (EXIT_FAILURE);
+	}
 	remAddrLen=sizeof(struct sockaddr_in);
 
 
