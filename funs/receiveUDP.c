@@ -18,7 +18,7 @@
  */
 int receiveUDP(uint8_t* buf, size_t numBytes)
 {
-        int sock, length, n, i;
+        int sock, length, n;
 	socklen_t remAddrLen;
 	struct sockaddr_in myAddr;
 	struct sockaddr_in remAddr;
@@ -44,8 +44,7 @@ int receiveUDP(uint8_t* buf, size_t numBytes)
 	}
 	remAddrLen=sizeof(struct sockaddr_in);
 
-	while(1)
-	{
+
 		n = recvfrom(sock,buf,numBytes,0,(struct sockaddr *)&remAddr,&remAddrLen);
 		if (n<0)
 		{		  
@@ -53,11 +52,6 @@ int receiveUDP(uint8_t* buf, size_t numBytes)
 		        //perror("recvfrom");
                         return(-3);
 		}
-		//write(1,"Received a datagram: ",21);
-		//write(1,buf,n);
-		printf("Contents of buffer: \n");
-		for (i=0; i<numBytes; i++)
-	                printf("\tbuf[%d]: %2x\n", i, buf[i]);
-	}
+
         return 0;
 }
